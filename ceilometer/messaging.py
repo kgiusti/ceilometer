@@ -18,6 +18,10 @@ import oslo_messaging
 from oslo_messaging._drivers import impl_rabbit
 from oslo_messaging.notify import notifier
 from oslo_messaging import serializer as oslo_serializer
+from oslo_log import log as logging
+import traceback
+
+LOG = logging.getLogger(__name__)
 
 DEFAULT_URL = "__default__"
 TRANSPORTS = {}
@@ -43,11 +47,28 @@ def setup():
 def get_transport(conf, url=None, optional=False, cache=True):
     """Initialise the oslo_messaging layer."""
     global TRANSPORTS, DEFAULT_URL
-    cache_key = url or DEFAULT_URL
+    LOG.warning("KAG: ceilometer get_transport(url=%s)", str(url))
+
+    try:
+        turl = oslo_messaging.TransportURL.parse(conf, url=url)
+        url = str(turl)
+        LOG.warning("KAG: ceilometer turl=%s", str(turl))
+    except oslo_messaging.InvalidTransportURL:
+        LOG.warning("KAG: bad url %s", url or "NO URL PASSED")
+        if not optional or url:
+            # required yet URL is invalid
+            raise
+        LOG.warning("KAG: Invalid URL")
+        return None
+
+    
+    cache_key = url
     transport = TRANSPORTS.get(cache_key)
     if not transport or not cache:
         try:
+            LOG.warning("KAG: getting a notification transport")
             transport = notifier.get_notification_transport(conf, url)
+            LOG.warning("KAG traceback: %s", str(traceback.format_stack()))
         except (oslo_messaging.InvalidTransportURL,
                 oslo_messaging.DriverLoadFailure):
             if not optional or url:
@@ -58,6 +79,7 @@ def get_transport(conf, url=None, optional=False, cache=True):
         else:
             if cache:
                 TRANSPORTS[cache_key] = transport
+                LOG.warning("KAG: transport now %s", str(TRANSPORTS))
     return transport
 
 
