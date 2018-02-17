@@ -47,28 +47,20 @@ def setup():
 def get_transport(conf, url=None, optional=False, cache=True):
     """Initialise the oslo_messaging layer."""
     global TRANSPORTS, DEFAULT_URL
-    LOG.warning("KAG: ceilometer get_transport(url=%s)", str(url))
-
-    try:
-        turl = oslo_messaging.TransportURL.parse(conf, url=url)
-        url = str(turl)
-        LOG.warning("KAG: ceilometer turl=%s", str(turl))
-    except oslo_messaging.InvalidTransportURL:
-        LOG.warning("KAG: bad url %s", url or "NO URL PASSED")
-        if not optional or url:
-            # required yet URL is invalid
-            raise
-        LOG.warning("KAG: Invalid URL")
-        return None
-
-    
-    cache_key = url
+    LOG.warning("KAG: ceil getting notification transport url=%s", str(url))
+    cache_key = url or DEFAULT_URL
+    LOG.warning("KAG: ceil cache_key=%s", str(cache_key))
     transport = TRANSPORTS.get(cache_key)
+    LOG.warning("KAG: aodh got transport=%s", str(transport))
     if not transport or not cache:
         try:
-            LOG.warning("KAG: getting a notification transport")
+            LOG.warning("KAG: ceil getting a new notification transport url=%s", str(url))
             transport = notifier.get_notification_transport(conf, url)
-            LOG.warning("KAG traceback: %s", str(traceback.format_stack()))
+            # LOG.warning("KAG traceback: %s", str(traceback.format_stack()))
+            LOG.warning("KAG: ceil notification driver=%s", str(transport))
+            if hasattr(transport, "_driver") and hasattr(transport._driver,
+                                                         "_url"):
+                LOG.warning("KAG: ceil transport URL=%s", str(transport._driver._url))
         except (oslo_messaging.InvalidTransportURL,
                 oslo_messaging.DriverLoadFailure):
             if not optional or url:
