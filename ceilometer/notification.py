@@ -210,6 +210,7 @@ class NotificationService(cotyledon.Service):
             listener.start(
                 override_pool_size=self.conf.max_parallel_requests
             )
+            LOG.warning("KAG: started listener %s %s", str(url), str(targets))
             self.listeners.append(listener)
 
     def _refresh_agent(self):
@@ -245,6 +246,7 @@ class NotificationService(cotyledon.Service):
         # if batching enabled.
         batch = (1 if self.conf.notification.batch_size > 1
                  else self.conf.max_parallel_requests)
+        LOG.warning("KAG: starting listener target %s", str(targets))
         self.pipeline_listener.start(override_pool_size=batch)
 
     @staticmethod

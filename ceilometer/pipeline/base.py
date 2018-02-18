@@ -83,6 +83,8 @@ class InterimPublishContext(object):
                         key = (self.hash_grouping(serialized_data,
                                                   pipe.get_grouping_key())
                                % len(self.notifiers))
+                        LOG.warning("KAG: notifying sample %s payload %s",
+                                    str(pipe.name), str(serialized_data))
                         self.notifiers[key].sample({}, event_type=pipe.name,
                                                    payload=[serialized_data])
         return p
