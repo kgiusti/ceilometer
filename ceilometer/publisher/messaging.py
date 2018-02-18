@@ -246,6 +246,9 @@ class NotifierPublisher(MessagingPublisher):
 
     def _send(self, event_type, data):
         try:
+            LOG.warning("KAG: sending sample notification %s %s",
+                        str(event_type),
+                        str(data))
             self.notifier.sample({}, event_type=event_type,
                                  payload=data)
         except oslo_messaging.MessageDeliveryFailure as e:

@@ -217,6 +217,8 @@ class PollingTask(object):
                         exc_info=True)
 
     def _send_notification(self, samples):
+        LOG.warning("KAG: sending manager telemetry.polling %s",
+                    str(samples))
         self.manager.notifier.sample(
             {},
             'telemetry.polling',
