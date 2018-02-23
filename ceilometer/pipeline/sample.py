@@ -40,6 +40,8 @@ class SampleEndpoint(base.MainNotificationEndpoint):
         return self.process_notifications('sample', notifications)
 
     def process_notifications(self, priority, notifications):
+        LOG.warning("KAG: processing notifications %s",
+                    str(notifications))
         for message in notifications:
             try:
                 with self.publisher as p:
@@ -61,6 +63,8 @@ class InterimSampleEndpoint(base.NotificationEndpoint):
         return self.process_notifications('sample', notifications)
 
     def process_notifications(self, priority, notifications):
+        LOG.warning("KAG: processing notifications %s",
+                    str(notifications))
         samples = chain.from_iterable(m["payload"] for m in notifications)
         samples = [
             sample_util.Sample(name=s['counter_name'],
@@ -154,6 +158,7 @@ class SampleSink(base.Sink):
         if transformed_samples:
             for p in self.publishers:
                 try:
+                    LOG.warning("KAG: publishing samples: %s", str(transformed_samples))
                     p.publish_samples(transformed_samples)
                 except Exception:
                     LOG.error("Pipeline %(pipeline)s: Continue after "

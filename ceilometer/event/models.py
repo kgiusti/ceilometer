@@ -117,7 +117,7 @@ class Trait(Model):
         Model.__init__(self, name=name, dtype=dtype, value=value)
 
     def __repr__(self):
-        return "<Trait: %s %d %s>" % (self.name, self.dtype, self.value)
+        return "<Trait: %s %s %s>" % (self.name, self.dtype, self.value)
 
     def serialize(self):
         return self.name, self.dtype, serialize_dt(self.value)

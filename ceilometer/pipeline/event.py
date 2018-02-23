@@ -54,6 +54,8 @@ class EventEndpoint(base.MainNotificationEndpoint):
         return self.process_notifications('error', notifications)
 
     def process_notifications(self, priority, notifications):
+        LOG.warning("KAG: processing notifications %s",
+                    str(notifications))
         for message in notifications:
             try:
                 event = self.event_converter.to_event(priority, message)
@@ -76,6 +78,8 @@ class InterimEventEndpoint(base.NotificationEndpoint):
         return self.process_notifications('sample', notifications)
 
     def process_notifications(self, priority, notifications):
+        LOG.warning("KAG: processing notifications %s",
+                    str(notifications))
         events = chain.from_iterable(m["payload"] for m in notifications)
         events = [
             models.Event(
@@ -125,6 +129,7 @@ class EventSink(base.Sink):
         if events:
             for p in self.publishers:
                 try:
+                    LOG.warning("KAG: publishing events: %s", str(events))
                     p.publish_events(events)
                 except Exception:
                     LOG.error("Pipeline %(pipeline)s: %(status)s "

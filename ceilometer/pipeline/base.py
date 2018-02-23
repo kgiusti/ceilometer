@@ -54,6 +54,10 @@ class InterimPublishContext(object):
         self.notifiers = self._get_notifiers(messaging.get_transport(conf))
 
     def _get_notifiers(self, transport):
+        LOG.warning("KAG: transport=%s", str(transport))
+        if hasattr(transport, "_driver") and hasattr(transport._driver,
+                                                     "_url"):
+            LOG.warning("KAG: ceil transport URL=%s", str(transport._driver._url))
         notifiers = []
         for x in range(self.conf.notification.pipeline_processing_queues):
             notifiers.append(oslo_messaging.Notifier(
