@@ -236,6 +236,7 @@ class NotifierPublisher(MessagingPublisher):
                                        parsed_url.path,
                                        urlparse.urlencode(options, True),
                                        parsed_url.fragment])
+        LOG.warning("KAG: creating messaging publisher")
         self.notifier = oslo_messaging.Notifier(
             messaging.get_transport(self.conf, url),
             driver=self.conf.publisher_notifier.telemetry_driver,
@@ -251,6 +252,7 @@ class NotifierPublisher(MessagingPublisher):
                         str(data))
             self.notifier.sample({}, event_type=event_type,
                                  payload=data)
+            LOG.warning("KAG: sent")
         except oslo_messaging.MessageDeliveryFailure as e:
             raise_delivery_failure(e)
 
