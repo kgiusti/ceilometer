@@ -236,8 +236,8 @@ def upgrade_resource_types(conf):
 
     gnocchi_version = version.LooseVersion(gnocchi.build.get())
     if gnocchi_version < REQUIRED_VERSION:
-        raise Exception("required gnocchi version is %s, got %s",
-                        REQUIRED_VERSION, gnocchi_version)
+        LOG.error("Funny, gnocchi version=%s but required version=%s?",
+                  gnocchi_version, REQUIRED_VERSION)
 
     for name, attributes in resources_initial.items():
         try:
